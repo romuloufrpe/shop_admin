@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../db/brand.dart';
 import '../db/category.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -18,6 +20,7 @@ class _AddProductState extends State<AddProduct> {
   BrandService _brandService = BrandService();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController productNameController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
   List<DocumentSnapshot> brands = <DocumentSnapshot>[];
   List<DocumentSnapshot> categories = <DocumentSnapshot>[];
   List<DropdownMenuItem<String>> categoriesDropDown =
@@ -86,48 +89,45 @@ class _AddProductState extends State<AddProduct> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Colors.grey.withOpacity(0.5), width: 2.5),
-                        onPressed: () {
-                          _selectImage(
-                              ImagePicker.pickImage(
-                                  source: ImageSource.gallery),
-                              1);
-                        },
-                        child: _displayChild1()
-                      ),
+                          borderSide: BorderSide(
+                              color: Colors.grey.withOpacity(0.5), width: 2.5),
+                          onPressed: () {
+                            _selectImage(
+                                ImagePicker.pickImage(
+                                    source: ImageSource.gallery),
+                                1);
+                          },
+                          child: _displayChild1()),
                     ),
                   ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Colors.grey.withOpacity(0.5), width: 2.5),
-                        onPressed: () {
-                          _selectImage(
-                              ImagePicker.pickImage(
-                                  source: ImageSource.gallery),
-                              2);
-                        },
-                        child: _displayChild2()
-                      ),
+                          borderSide: BorderSide(
+                              color: Colors.grey.withOpacity(0.5), width: 2.5),
+                          onPressed: () {
+                            _selectImage(
+                                ImagePicker.pickImage(
+                                    source: ImageSource.gallery),
+                                2);
+                          },
+                          child: _displayChild2()),
                     ),
                   ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Colors.grey.withOpacity(0.5), width: 2.5),
-                        onPressed: () {
-                          _selectImage(
-                              ImagePicker.pickImage(
-                                  source: ImageSource.gallery),
-                              3);
-                        },
-                          child: _displayChild3()
-                      ),
+                          borderSide: BorderSide(
+                              color: Colors.grey.withOpacity(0.5), width: 2.5),
+                          onPressed: () {
+                            _selectImage(
+                                ImagePicker.pickImage(
+                                    source: ImageSource.gallery),
+                                3);
+                          },
+                          child: _displayChild3()),
                     ),
                   ),
                 ],
@@ -184,7 +184,7 @@ class _AddProductState extends State<AddProduct> {
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: TextFormField(
-                  controller: productNameController,
+                  controller: quantityController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(hintText: 'Quantidade'),
                   validator: (value) {
@@ -263,7 +263,9 @@ class _AddProductState extends State<AddProduct> {
                 color: Colors.red,
                 textColor: Colors.white,
                 child: Text('Adicionar'),
-                onPressed: () {},
+                onPressed: () {
+                  validateAndUpload();
+                },
               )
             ],
           ),
@@ -335,16 +337,13 @@ class _AddProductState extends State<AddProduct> {
           color: Colors.grey,
         ),
       );
-    }else{
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-        child: Image.file(_image1)
-      );
+    } else {
+      return Image.file(_image1, fit: BoxFit.fill, width: double.infinity);
     }
   }
 
-Widget _displayChild2() {
-  if (_image2 == null) {
+  Widget _displayChild2() {
+    if (_image2 == null) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
         child: new Icon(
@@ -352,28 +351,38 @@ Widget _displayChild2() {
           color: Colors.grey,
         ),
       );
-    }else{
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-        child: Image.file(_image2)
-      );
+    } else {
+      return Image.file(_image2, fit: BoxFit.fill, width: double.infinity);
     }
-}
-Widget _displayChild3() {
-  if (_image3 == null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-        child: new Icon(
-          Icons.add,
-          color: Colors.grey,
-        ),
-      );
-    }else{
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-        child: Image.file(_image3)
-      );
-    }
-}
-}
+  }
 
+  Widget _displayChild3() {
+    if (_image3 == null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+        child: new Icon(
+          Icons.add,
+          color: Colors.grey,
+        ),
+      );
+    } else {
+      return Image.file(_image3, fit: BoxFit.fill, width: double.infinity);
+    }
+  }
+
+  void validateAndUpload() {
+    if(_formKey.currentState.validate()){
+      if(_image1 != null && _image2 != null && _image3 != null){
+          if(selectedSizes.isNotEmpty){
+              String imageUrl;
+              final String picture = "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+             // StorageUploadTask task = 
+          }else{
+            Fluttertoast.showToast(msg: 'Selecione pelo menos um tamanho');
+          }
+      }else{
+        Fluttertoast.showToast(msg: 'todas as imagens devem ser fornecidas');
+      }
+    }
+  }
+}
