@@ -9,6 +9,7 @@ import '../db/brand.dart';
 import '../db/category.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -333,7 +334,7 @@ class _AddProductState extends State<AddProduct> {
       return Padding(
         padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
         child: new Icon(
-          Icons.add,
+          FontAwesomeIcons.plus,
           color: Colors.grey,
         ),
       );
@@ -347,7 +348,7 @@ class _AddProductState extends State<AddProduct> {
       return Padding(
         padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
         child: new Icon(
-          Icons.add,
+          FontAwesomeIcons.plus,
           color: Colors.grey,
         ),
       );
@@ -361,7 +362,7 @@ class _AddProductState extends State<AddProduct> {
       return Padding(
         padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
         child: new Icon(
-          Icons.add,
+          FontAwesomeIcons.plus,
           color: Colors.grey,
         ),
       );
@@ -371,16 +372,21 @@ class _AddProductState extends State<AddProduct> {
   }
 
   void validateAndUpload() {
-    if(_formKey.currentState.validate()){
-      if(_image1 != null && _image2 != null && _image3 != null){
-          if(selectedSizes.isNotEmpty){
-              String imageUrl;
-              final String picture = "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-             // StorageUploadTask task = 
-          }else{
-            Fluttertoast.showToast(msg: 'Selecione pelo menos um tamanho');
-          }
-      }else{
+    if (_formKey.currentState.validate()) {
+      if (_image1 != null && _image2 != null && _image3 != null) {
+        if (selectedSizes.isNotEmpty) {
+          String imageUrl;
+          final String picture =
+              "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+          // StorageUploadTask task =
+          final StorageReference firebaseStorageRef =
+              FirebaseStorage.instance.ref().child(picture);
+          final StorageUploadTask task = firebaseStorageRef.putFile(_image1);
+          //imageUrl = task.toString();
+        } else {
+          Fluttertoast.showToast(msg: 'Selecione pelo menos um tamanho');
+        }
+      } else {
         Fluttertoast.showToast(msg: 'todas as imagens devem ser fornecidas');
       }
     }
