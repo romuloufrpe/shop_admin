@@ -9,6 +9,8 @@ import 'package:shop_app_admin/utils/app_tools.dart';
 import 'package:shop_app_admin/db/brand.dart';
 import 'package:shop_app_admin/db/category.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shop_app_admin/db/product.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -22,6 +24,7 @@ class _AddProductState extends State<AddProduct> {
   List<DropdownMenuItem<String>> categoriesDropDown =
       <DropdownMenuItem<String>>[];
   String _currentCategory;
+
   List<String> categoriesList = new List();
 // ======================= MODELOS
   BrandService _brandService = BrandService();
@@ -30,13 +33,25 @@ class _AddProductState extends State<AddProduct> {
   String _currentBrand;
   List<String> brandsList = new List();
 
+  String erro;
+
   Map<int, File> imagesMap = new Map();
+
+  ProductService productService = ProductService();
 
   TextEditingController productTitle = new TextEditingController();
   TextEditingController productPrice = new TextEditingController();
   TextEditingController productDesc = new TextEditingController();
+  TextEditingController productCat = new TextEditingController();
+
+  String productTitles;
+  String productPrices;
+  String productDescs;
+  String productCats;
+  String productBrands;
 
   final scaffolKey = new GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -107,6 +122,7 @@ class _AddProductState extends State<AddProduct> {
         ],
       ),
       body: new SingleChildScrollView(
+        key: _formKey,
         child: new Column(
           children: <Widget>[
             new SizedBox(
@@ -124,7 +140,7 @@ class _AddProductState extends State<AddProduct> {
             new SizedBox(
               height: 10.0,
             ),
-             productTextField(
+            productTextField(
                 textTitle: "Valor do Produto",
                 textHint: "Entre aqui com o valor produto",
                 controller: productPrice,
@@ -155,7 +171,7 @@ class _AddProductState extends State<AddProduct> {
             new SizedBox(height: 20.0),
             appButton(
                 btnTxt: "Add Produto",
-                onBtnclicked: () => addNewProduct(),
+                onBtnclicked:addNewProduct,
                 btnPadding: 20.0,
                 btnColor: Colors.red)
           ],
@@ -196,15 +212,17 @@ class _AddProductState extends State<AddProduct> {
   pickImage() async {
     File file = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (file != null) {
-      //imagesMap[imagesMap.length] = file;
+      imagesMap[imagesMap.length] = file;
       List<File> imageFile = new List();
       imageFile.add(file);
+      //print(imageFile.length);
       //imageList = new List.from(imageFile);
       if (imageList == null) {
         imageList = new List.from(imageFile, growable: true);
       } else {
         for (int s = 0; s < imageFile.length; s++) {
           imageList.add(file);
+          print(imageFile.length);
         }
       }
       setState(() {});
@@ -217,25 +235,105 @@ class _AddProductState extends State<AddProduct> {
     setState(() {});
   }
 
-
-  addNewProduct(){
-    if(imageList == null || imageList.isEmpty){
+  addNewProduct() async{
+    if (imageList == null || imageList.isEmpty) {
       showSnackBar("Adicione uma foto", scaffolKey);
       return;
     }
-    if(productTitle.text == ""){
+    if (productTitle.text == "") {
       showSnackBar("Adicione o nome do produto", scaffolKey);
       return;
     }
-    if(productPrice.text == ""){
+    if (productPrice.text == "") {
       showSnackBar("Adicione o valor do produto", scaffolKey);
       return;
     }
-    if(productDesc.text == ""){
+    if (productDesc.text == "") {
       showSnackBar("Adicione a descrição do produto", scaffolKey);
       return;
+    } else {
+      /*List<String> imagesUrl = [];
+      int uploadCount = 0;
+      final String picture =
+          "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+      final StorageReference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child(picture);
+      final StorageMetadata metadata = StorageMetadata(contentType: 'image/png');
+      imageList.forEach((image){
+          firebaseStorageRef.putFile(image, metadata).onComplete.then((snapshot){
+            
+          });
+      });*/
+      // _uploadImages(productTitle.text, imageList, onSuccess, onFailure)
     }
-  }
+
+    displayProgressDialog(context);
+
+    Map<String, dynamic> newProduct = {
+      productTitles: productTitle.text,
+      productPrices: productPrice.text,
+      productDescs: productDesc.text,
+      productCats: _currentCategory,
+      productBrands: _currentBrand
+    };
 
 
+    // Adicionando as informações ao firebase
+    String productId =
+        await productService.createProduct(newProduct: newProduct);
+    // envia imagens para o fibaseStorage
+    List<String> imagesUrl = await productService.uploadImageProduct(
+        imageList: imageList, docId: productId, title: productTitle.text);
+
+
+    // checa se existe algum erro no envio das imagens para o firebase
+   if(imagesUrl.contains(erro)){
+      closeProgressDialog(context);
+      showSnackBar("Não foi possivel enviar as imagens", scaffolKey);
+      return;
+    }
+    bool result = await productService.updateProductImages(docID: productId, data: imagesUrl);
+
+    if(result !=null && result == true) {
+      closeProgressDialog(context);
+      resetEverything();
+            showSnackBar("Produto Adicionado", scaffolKey);
+          }else{
+            closeProgressDialog(context);
+            showSnackBar("Erro ao enviar produto", scaffolKey);    }
+        }
+      
+        void resetEverything() {
+          productTitle.text = "";
+          productPrice.text = "";
+          productDesc.text = "";
+          imageList.clear();
+        }
+
+ /* _uploadImages(
+      String productId,
+      List<File> images,
+      Function onSuccess(List<String> imageUrls),
+      Function onFailure(String e)) {
+    List<String> imagesURls = [];
+    int uploadCount = 0;
+    final String picture =
+        "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+
+    StorageReference storaRef = FirebaseStorage.instance
+        .ref()
+        .child('Products')
+        .child(productId)
+        .child(picture);
+    StorageMetadata metadata = StorageMetadata(contentType: picture);
+
+    images.forEach((image) {
+      storaRef.putFile(image, metadata).onComplete.then((snapshot) {
+        uploadCount++;
+        if (uploadCount == images.length) {
+          onSuccess(imagesURls);
+        }
+      });
+    });
+  }*/
 }

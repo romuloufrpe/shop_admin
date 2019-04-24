@@ -101,6 +101,7 @@ Widget productTextField(
             child: new TextField(
               controller: controller,
               keyboardType: textType == null ? TextInputType.text : textType,
+              //maxLines: maxLines == null ? null: maxLines,
               decoration: new InputDecoration(
                   border: InputBorder.none, hintText: textHint),
             ),
