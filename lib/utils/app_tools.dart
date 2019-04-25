@@ -70,7 +70,8 @@ Widget productTextField(
     String textHint,
     double height,
     TextEditingController controller,
-    TextInputType textType}) {
+    TextInputType textType,
+    int maxLines}) {
   textTitle == null ? textTitle = "Enter Title" : textTitle;
   textHint == null ? textHint = "Entre Hint" : textHint;
   height == null ? height = 50.0 : height;
@@ -101,7 +102,7 @@ Widget productTextField(
             child: new TextField(
               controller: controller,
               keyboardType: textType == null ? TextInputType.text : textType,
-              //maxLines: maxLines == null ? null: maxLines,
+              maxLines: maxLines == null ? null: maxLines,
               decoration: new InputDecoration(
                   border: InputBorder.none, hintText: textHint),
             ),

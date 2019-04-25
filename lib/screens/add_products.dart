@@ -39,16 +39,16 @@ class _AddProductState extends State<AddProduct> {
 
   ProductService productService = ProductService();
 
-  TextEditingController productTitle = new TextEditingController();
-  TextEditingController productPrice = new TextEditingController();
-  TextEditingController productDesc = new TextEditingController();
-  TextEditingController productCat = new TextEditingController();
+  TextEditingController productControllerTitle = new TextEditingController();
+  TextEditingController productControllerPrice = new TextEditingController();
+  TextEditingController productControllerDesc = new TextEditingController();
+  TextEditingController productControllerCat = new TextEditingController();
 
-  String productTitles;
-  String productPrices;
-  String productDescs;
-  String productCats;
-  String productBrands;
+  static const String productTitle = "productTitle";
+  static const String productPrice = "productPrice";
+  static const String productDesc = "productDesc";
+  static const String productCat = "productCat";
+  static const String productBrand = "productBrand";
 
   final scaffolKey = new GlobalKey<ScaffoldState>();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -136,14 +136,14 @@ class _AddProductState extends State<AddProduct> {
             productTextField(
                 textTitle: "Nome do Produto",
                 textHint: "Entre aqui com o nome do produto",
-                controller: productTitle),
+                controller: productControllerTitle),
             new SizedBox(
               height: 10.0,
             ),
             productTextField(
                 textTitle: "Valor do Produto",
                 textHint: "Entre aqui com o valor produto",
-                controller: productPrice,
+                controller: productControllerPrice,
                 textType: TextInputType.number),
             new SizedBox(
               height: 10.0,
@@ -151,7 +151,8 @@ class _AddProductState extends State<AddProduct> {
             productTextField(
                 textTitle: "Descrição do Produto",
                 textHint: "Entre aqui com a descrição do produto",
-                controller: productDesc,
+                controller: productControllerDesc,
+                maxLines: 4,
                 height: 150.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -171,7 +172,7 @@ class _AddProductState extends State<AddProduct> {
             new SizedBox(height: 20.0),
             appButton(
                 btnTxt: "Add Produto",
-                onBtnclicked:addNewProduct,
+                onBtnclicked: addNewProduct,
                 btnPadding: 20.0,
                 btnColor: Colors.red)
           ],
@@ -212,22 +213,20 @@ class _AddProductState extends State<AddProduct> {
   pickImage() async {
     File file = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (file != null) {
-      imagesMap[imagesMap.length] = file;
+      //imagesMap[imagesMap.length] = file;
       List<File> imageFile = new List();
       imageFile.add(file);
-      //print(imageFile.length);
       //imageList = new List.from(imageFile);
       if (imageList == null) {
         imageList = new List.from(imageFile, growable: true);
       } else {
         for (int s = 0; s < imageFile.length; s++) {
           imageList.add(file);
-          print(imageFile.length);
         }
       }
       setState(() {});
     }
-  }
+}
 
   removeImage(int index) async {
     //imagesMap.remove(index);
@@ -235,20 +234,20 @@ class _AddProductState extends State<AddProduct> {
     setState(() {});
   }
 
-  addNewProduct() async{
+  addNewProduct() async {
     if (imageList == null || imageList.isEmpty) {
       showSnackBar("Adicione uma foto", scaffolKey);
       return;
     }
-    if (productTitle.text == "") {
+    if (productControllerTitle.text == "") {
       showSnackBar("Adicione o nome do produto", scaffolKey);
       return;
     }
-    if (productPrice.text == "") {
+    if (productControllerPrice.text == "") {
       showSnackBar("Adicione o valor do produto", scaffolKey);
       return;
     }
-    if (productDesc.text == "") {
+    if (productControllerDesc.text == "") {
       showSnackBar("Adicione a descrição do produto", scaffolKey);
       return;
     } else {
@@ -270,70 +269,68 @@ class _AddProductState extends State<AddProduct> {
     displayProgressDialog(context);
 
     Map<String, dynamic> newProduct = {
-      productTitles: productTitle.text,
-      productPrices: productPrice.text,
-      productDescs: productDesc.text,
-      productCats: _currentCategory,
-      productBrands: _currentBrand
+      productTitle: productControllerTitle.text,
+      productPrice: productControllerPrice.text,
+      productDesc: productControllerDesc.text,
+      productCat: _currentCategory,
+      productBrand: _currentBrand
     };
 
-
-    // Adicionando as informações ao firebase
+    //    adiciona informação para o firebase
     String productId =
-        await productService.createProduct(newProduct: newProduct);
-    // envia imagens para o fibaseStorage
-    List<String> imagesUrl = await productService.uploadImageProduct(
-        imageList: imageList, docId: productId, title: productTitle.text);
+        await productService.addNewProduct(newProduct: newProduct);
+// faz o upload das imagens
+    List<String> imagesURL = await productService.uploadImageProduct(
+        docId: productId, imageList: imageList);
 
 
-    // checa se existe algum erro no envio das imagens para o firebase
-   if(imagesUrl.contains(erro)){
-      closeProgressDialog(context);
-      showSnackBar("Não foi possivel enviar as imagens", scaffolKey);
-      return;
-    }
-    bool result = await productService.updateProductImages(docID: productId, data: imagesUrl);
+  if(imagesURL.contains("erro")){
+    closeProgressDialog(context);
+    showSnackBar("Erro ao enviar as imagens", scaffolKey);
+    return;
+  }
+  bool result = await productService.updateProductImages(docID: productId, data: imagesURL);
+  if(result != null && result == true) {
+    closeProgressDialog(context);
+    resetEverything();
+        showSnackBar("Cadastrado com Sucesso!", scaffolKey);
+      }else {
+        closeProgressDialog(context);
+        showSnackBar("erro tente novamente!", scaffolKey);
+      }
+        /* _uploadImages(
+          String productId,
+          List<File> images,
+          Function onSuccess(List<String> imageUrls),
+          Function onFailure(String e)) {
+        List<String> imagesURls = [];
+        int uploadCount = 0;
+        final String picture =
+            "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+    
+        StorageReference storaRef = FirebaseStorage.instance
+            .ref()
+            .child('Products')
+            .child(productId)
+            .child(picture);
+        StorageMetadata metadata = StorageMetadata(contentType: picture);
+    
+        images.forEach((image) {
+          storaRef.putFile(image, metadata).onComplete.then((snapshot) {
+            uploadCount++;
+            if (uploadCount == images.length) {
+              onSuccess(imagesURls);
+            }
+          });
+        });
+          }*/
+      }
 
-    if(result !=null && result == true) {
-      closeProgressDialog(context);
-      resetEverything();
-            showSnackBar("Produto Adicionado", scaffolKey);
-          }else{
-            closeProgressDialog(context);
-            showSnackBar("Erro ao enviar produto", scaffolKey);    }
-        }
-      
-        void resetEverything() {
-          productTitle.text = "";
-          productPrice.text = "";
-          productDesc.text = "";
-          imageList.clear();
-        }
-
- /* _uploadImages(
-      String productId,
-      List<File> images,
-      Function onSuccess(List<String> imageUrls),
-      Function onFailure(String e)) {
-    List<String> imagesURls = [];
-    int uploadCount = 0;
-    final String picture =
-        "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-
-    StorageReference storaRef = FirebaseStorage.instance
-        .ref()
-        .child('Products')
-        .child(productId)
-        .child(picture);
-    StorageMetadata metadata = StorageMetadata(contentType: picture);
-
-    images.forEach((image) {
-      storaRef.putFile(image, metadata).onComplete.then((snapshot) {
-        uploadCount++;
-        if (uploadCount == images.length) {
-          onSuccess(imagesURls);
-        }
-      });
-    });
-  }*/
+    
+     void resetEverything() {
+        imageList.clear();
+        productControllerTitle.text = "";
+        productControllerPrice.text = "";
+        productControllerDesc.text = "";
+      }
 }
