@@ -216,17 +216,19 @@ class _AddProductState extends State<AddProduct> {
       //imagesMap[imagesMap.length] = file;
       List<File> imageFile = new List();
       imageFile.add(file);
+      //print(imageFile.length);
       //imageList = new List.from(imageFile);
       if (imageList == null) {
         imageList = new List.from(imageFile, growable: true);
       } else {
         for (int s = 0; s < imageFile.length; s++) {
           imageList.add(file);
+          print(imageList.length);
         }
       }
       setState(() {});
     }
-}
+  }
 
   removeImage(int index) async {
     //imagesMap.remove(index);
@@ -283,22 +285,22 @@ class _AddProductState extends State<AddProduct> {
     List<String> imagesURL = await productService.uploadImageProduct(
         docId: productId, imageList: imageList);
 
-
-  if(imagesURL.contains("erro")){
-    closeProgressDialog(context);
-    showSnackBar("Erro ao enviar as imagens", scaffolKey);
-    return;
-  }
-  bool result = await productService.updateProductImages(docID: productId, data: imagesURL);
-  if(result != null && result == true) {
-    closeProgressDialog(context);
-    resetEverything();
-        showSnackBar("Cadastrado com Sucesso!", scaffolKey);
-      }else {
-        closeProgressDialog(context);
-        showSnackBar("erro tente novamente!", scaffolKey);
-      }
-        /* _uploadImages(
+    if (imagesURL.contains("erro")) {
+      closeProgressDialog(context);
+      showSnackBar("Erro ao enviar as imagens", scaffolKey);
+      return;
+    }
+    bool result = await productService.updateProductImages(
+        docID: productId, data: imagesURL);
+    if (result != null && result == true) {
+      closeProgressDialog(context);
+      resetEverything();
+      showSnackBar("Cadastrado com Sucesso!", scaffolKey);
+    } else {
+      closeProgressDialog(context);
+      showSnackBar("erro tente novamente!", scaffolKey);
+    }
+    /* _uploadImages(
           String productId,
           List<File> images,
           Function onSuccess(List<String> imageUrls),
@@ -324,13 +326,13 @@ class _AddProductState extends State<AddProduct> {
           });
         });
           }*/
-      }
+  }
 
-    
-     void resetEverything() {
-        imageList.clear();
-        productControllerTitle.text = "";
-        productControllerPrice.text = "";
-        productControllerDesc.text = "";
-      }
+  void resetEverything() {
+    imageList.clear();
+    productControllerTitle.text = "";
+    productControllerPrice.text = "";
+    productControllerDesc.text = "";
+    setState(() {});
+  }
 }

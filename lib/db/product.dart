@@ -34,9 +34,9 @@ class ProductService {
       StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
       String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
       imagesUrl.add(downloadUrl.toString());
-
-      return imagesUrl;
+      print(imagesUrl.length);
     }
+    return imagesUrl;
   }
 
   @override
