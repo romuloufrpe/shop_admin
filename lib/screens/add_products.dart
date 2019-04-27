@@ -33,6 +33,8 @@ class _AddProductState extends State<AddProduct> {
   String _currentBrand;
   List<String> brandsList = new List();
 
+   List<String> selectedSizes = <String>[];
+
   String erro;
 
   Map<int, File> imagesMap = new Map();
@@ -49,6 +51,7 @@ class _AddProductState extends State<AddProduct> {
   static const String productDesc = "productDesc";
   static const String productCat = "productCat";
   static const String productBrand = "productBrand";
+  static const String productSize = "productSize";
 
   final scaffolKey = new GlobalKey<ScaffoldState>();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -170,11 +173,103 @@ class _AddProductState extends State<AddProduct> {
               ],
             ),
             new SizedBox(height: 20.0),
+            Text('Tamanho', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('PP'),
+                      onChanged: (value) => changeSelectedSize('PP'),
+                    ),
+                    Text('PP'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('P'),
+                      onChanged: (value) => changeSelectedSize('P'),
+                    ),
+                    Text('P'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('M'),
+                      onChanged: (value) => changeSelectedSize('M'),
+                    ),
+                    Text('M'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('G'),
+                      onChanged: (value) => changeSelectedSize('G'),
+                    ),
+                    Text('G'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('GG'),
+                      onChanged: (value) => changeSelectedSize('GG'),
+                    ),
+                    Text('GG'),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('28'),
+                      onChanged: (value) => changeSelectedSize('28'),
+                    ),
+                    Text('28'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('32'),
+                      onChanged: (value) => changeSelectedSize('32'),
+                    ),
+                    Text('32'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('36'),
+                      onChanged: (value) => changeSelectedSize('36'),
+                    ),
+                    Text('36'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('40'),
+                      onChanged: (value) => changeSelectedSize('40'),
+                    ),
+                    Text('40'),
+                    Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.blue,
+                      value: selectedSizes.contains('44'),
+                      onChanged: (value) => changeSelectedSize('44'),
+                    ),
+                    Text('44'),
+                  ],
+                ),
+),
+            new SizedBox(height: 20.0),
             appButton(
                 btnTxt: "Add Produto",
                 onBtnclicked: addNewProduct,
                 btnPadding: 20.0,
-                btnColor: Colors.red)
+                btnColor: Colors.red),
+
+          
           ],
         ),
       ),
@@ -253,19 +348,6 @@ class _AddProductState extends State<AddProduct> {
       showSnackBar("Adicione a descrição do produto", scaffolKey);
       return;
     } else {
-      /*List<String> imagesUrl = [];
-      int uploadCount = 0;
-      final String picture =
-          "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-      final StorageReference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(picture);
-      final StorageMetadata metadata = StorageMetadata(contentType: 'image/png');
-      imageList.forEach((image){
-          firebaseStorageRef.putFile(image, metadata).onComplete.then((snapshot){
-            
-          });
-      });*/
-      // _uploadImages(productTitle.text, imageList, onSuccess, onFailure)
     }
 
     displayProgressDialog(context);
@@ -275,7 +357,8 @@ class _AddProductState extends State<AddProduct> {
       productPrice: productControllerPrice.text,
       productDesc: productControllerDesc.text,
       productCat: _currentCategory,
-      productBrand: _currentBrand
+      productBrand: _currentBrand,
+      productSize: selectedSizes
     };
 
     //    adiciona informação para o firebase
@@ -300,33 +383,19 @@ class _AddProductState extends State<AddProduct> {
       closeProgressDialog(context);
       showSnackBar("erro tente novamente!", scaffolKey);
     }
-    /* _uploadImages(
-          String productId,
-          List<File> images,
-          Function onSuccess(List<String> imageUrls),
-          Function onFailure(String e)) {
-        List<String> imagesURls = [];
-        int uploadCount = 0;
-        final String picture =
-            "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-    
-        StorageReference storaRef = FirebaseStorage.instance
-            .ref()
-            .child('Products')
-            .child(productId)
-            .child(picture);
-        StorageMetadata metadata = StorageMetadata(contentType: picture);
-    
-        images.forEach((image) {
-          storaRef.putFile(image, metadata).onComplete.then((snapshot) {
-            uploadCount++;
-            if (uploadCount == images.length) {
-              onSuccess(imagesURls);
-            }
-          });
-        });
-          }*/
   }
+   void changeSelectedSize(String size) {
+    if (selectedSizes.contains(size)) {
+      setState(() {
+        selectedSizes.remove(size);
+      });
+    } else {
+      setState(() {
+        selectedSizes.insert(0, size);
+      });
+    }
+  }
+
 
   void resetEverything() {
     imageList.clear();
