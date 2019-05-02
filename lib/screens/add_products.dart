@@ -1,16 +1,12 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shop_app_admin/utils/progressdialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app_admin/utils/app_tools.dart';
 import 'package:shop_app_admin/db/brand.dart';
 import 'package:shop_app_admin/db/category.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shop_app_admin/db/product.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -33,7 +29,7 @@ class _AddProductState extends State<AddProduct> {
   String _currentBrand;
   List<String> brandsList = new List();
 
-   List<String> selectedSizes = <String>[];
+  List<String> selectedSizes = <String>[];
 
   String erro;
 
@@ -173,103 +169,105 @@ class _AddProductState extends State<AddProduct> {
               ],
             ),
             new SizedBox(height: 20.0),
-            Text('Tamanho', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('PP'),
-                      onChanged: (value) => changeSelectedSize('PP'),
-                    ),
-                    Text('PP'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('P'),
-                      onChanged: (value) => changeSelectedSize('P'),
-                    ),
-                    Text('P'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('M'),
-                      onChanged: (value) => changeSelectedSize('M'),
-                    ),
-                    Text('M'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('G'),
-                      onChanged: (value) => changeSelectedSize('G'),
-                    ),
-                    Text('G'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('GG'),
-                      onChanged: (value) => changeSelectedSize('GG'),
-                    ),
-                    Text('GG'),
-                  ],
-                ),
+            Text(
+              'Tamanho',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('PP'),
+                    onChanged: (value) => changeSelectedSize('PP'),
+                  ),
+                  Text('PP'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('P'),
+                    onChanged: (value) => changeSelectedSize('P'),
+                  ),
+                  Text('P'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('M'),
+                    onChanged: (value) => changeSelectedSize('M'),
+                  ),
+                  Text('M'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('G'),
+                    onChanged: (value) => changeSelectedSize('G'),
+                  ),
+                  Text('G'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('GG'),
+                    onChanged: (value) => changeSelectedSize('GG'),
+                  ),
+                  Text('GG'),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('28'),
-                      onChanged: (value) => changeSelectedSize('28'),
-                    ),
-                    Text('28'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('32'),
-                      onChanged: (value) => changeSelectedSize('32'),
-                    ),
-                    Text('32'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('36'),
-                      onChanged: (value) => changeSelectedSize('36'),
-                    ),
-                    Text('36'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('40'),
-                      onChanged: (value) => changeSelectedSize('40'),
-                    ),
-                    Text('40'),
-                    Checkbox(
-                      activeColor: Colors.white,
-                      checkColor: Colors.blue,
-                      value: selectedSizes.contains('44'),
-                      onChanged: (value) => changeSelectedSize('44'),
-                    ),
-                    Text('44'),
-                  ],
-                ),
-),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('28'),
+                    onChanged: (value) => changeSelectedSize('28'),
+                  ),
+                  Text('28'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('32'),
+                    onChanged: (value) => changeSelectedSize('32'),
+                  ),
+                  Text('32'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('36'),
+                    onChanged: (value) => changeSelectedSize('36'),
+                  ),
+                  Text('36'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('40'),
+                    onChanged: (value) => changeSelectedSize('40'),
+                  ),
+                  Text('40'),
+                  Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.blue,
+                    value: selectedSizes.contains('44'),
+                    onChanged: (value) => changeSelectedSize('44'),
+                  ),
+                  Text('44'),
+                ],
+              ),
+            ),
             new SizedBox(height: 20.0),
             appButton(
                 btnTxt: "Add Produto",
                 onBtnclicked: addNewProduct,
                 btnPadding: 20.0,
                 btnColor: Colors.red),
-
-          
           ],
         ),
       ),
@@ -308,11 +306,11 @@ class _AddProductState extends State<AddProduct> {
   pickImage() async {
     File file = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (file != null) {
-      //imagesMap[imagesMap.length] = file;
+      //!imagesMap[imagesMap.length] = file;
       List<File> imageFile = new List();
       imageFile.add(file);
-      //print(imageFile.length);
-      //imageList = new List.from(imageFile);
+      //!print(imageFile.length);
+      //!imageList = new List.from(imageFile);
       if (imageList == null) {
         imageList = new List.from(imageFile, growable: true);
       } else {
@@ -326,7 +324,7 @@ class _AddProductState extends State<AddProduct> {
   }
 
   removeImage(int index) async {
-    //imagesMap.remove(index);
+    //!imagesMap.remove(index);
     imageList.removeAt(index);
     setState(() {});
   }
@@ -347,8 +345,7 @@ class _AddProductState extends State<AddProduct> {
     if (productControllerDesc.text == "") {
       showSnackBar("Adicione a descrição do produto", scaffolKey);
       return;
-    } else {
-    }
+    } else {}
 
     displayProgressDialog(context);
 
@@ -361,10 +358,10 @@ class _AddProductState extends State<AddProduct> {
       productSize: selectedSizes
     };
 
-    //    adiciona informação para o firebase
+    //   ?adiciona informação para o firebase
     String productId =
         await productService.addNewProduct(newProduct: newProduct);
-// faz o upload das imagens
+    // ?faz o upload das imagens
     List<String> imagesURL = await productService.uploadImageProduct(
         docId: productId, imageList: imageList);
 
@@ -384,7 +381,8 @@ class _AddProductState extends State<AddProduct> {
       showSnackBar("erro tente novamente!", scaffolKey);
     }
   }
-   void changeSelectedSize(String size) {
+
+  void changeSelectedSize(String size) {
     if (selectedSizes.contains(size)) {
       setState(() {
         selectedSizes.remove(size);
@@ -395,7 +393,6 @@ class _AddProductState extends State<AddProduct> {
       });
     }
   }
-
 
   void resetEverything() {
     imageList.clear();
