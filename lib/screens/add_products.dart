@@ -42,6 +42,7 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController productControllerDesc = new TextEditingController();
   TextEditingController productControllerCat = new TextEditingController();
 
+  static const String productID = "productID";
   static const String productTitle = "productTitle";
   static const String productPrice = "productPrice";
   static const String productDesc = "productDesc";
@@ -350,6 +351,7 @@ class _AddProductState extends State<AddProduct> {
     displayProgressDialog(context);
 
     Map<String, dynamic> newProduct = {
+      productID: "",
       productTitle: productControllerTitle.text,
       productPrice: productControllerPrice.text,
       productDesc: productControllerDesc.text,
@@ -361,6 +363,8 @@ class _AddProductState extends State<AddProduct> {
     //   ?adiciona informação para o firebase
     String productId =
         await productService.addNewProduct(newProduct: newProduct);
+
+      
     // ?faz o upload das imagens
     List<String> imagesURL = await productService.uploadImageProduct(
         docId: productId, imageList: imageList);
@@ -373,6 +377,7 @@ class _AddProductState extends State<AddProduct> {
     bool result = await productService.updateProductImages(
         docID: productId, data: imagesURL);
     if (result != null && result == true) {
+      productService.updateIDProduct(productId);
       closeProgressDialog(context);
       resetEverything();
       showSnackBar("Cadastrado com Sucesso!", scaffolKey);

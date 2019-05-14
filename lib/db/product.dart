@@ -8,7 +8,6 @@ class ProductService {
   Firestore _firestore = Firestore.instance;
   String ref = 'product';
 
-  @override
   Future<String> addNewProduct({Map newProduct}) async {
     String documentID;
 
@@ -19,7 +18,13 @@ class ProductService {
     return documentID;
   }
 
-  @override
+  Future<String> updateIDProduct(String documentId) async{
+    await _firestore.collection(ref).document(documentId).updateData({"productID": documentId}).whenComplete((){
+      return true;
+    });
+    return "Id adicionada";
+  }
+
   Future<List<String>> uploadImageProduct(
       {List<File> imageList, String docId}) async {
     List<String> imagesUrl = new List();
@@ -39,7 +44,6 @@ class ProductService {
     return imagesUrl;
   }
 
-  @override
   Future<bool> updateProductImages({String docID, List<String> data}) async {
     bool msg;
     await _firestore
@@ -54,7 +58,6 @@ class ProductService {
   /*void createProduct(String title, String desc, String price, String imageUrl) {
     var id = Uuid();
     String productId = id.v1();
-
     _firestore.collection(ref).document(productId).setData({
       'title': title,
       'desc': desc,
